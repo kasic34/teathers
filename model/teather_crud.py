@@ -1,6 +1,5 @@
 import sqlite3
 
-
 class teather_CRUD:
     def __init__(self, db_path="student_management.db"):
         self.db_patch = db_path

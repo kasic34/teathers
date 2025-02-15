@@ -7,7 +7,7 @@ class user_CRUD:
     def create_user(self, username, password, role):
         conn = sqlite3.connect(self.db_patch)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO users (username, password, role)", (username, password, role))
+        cursor.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", (username, password, role))
         conn.commit()
         conn.close()
 
