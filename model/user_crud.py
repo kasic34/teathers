@@ -1,6 +1,6 @@
 import sqlite3
 
-class user_CRUD:
+class userCRUD:
     def __init__(self, db_path="student_management.db"):
         self.db_patch=db_path
 
