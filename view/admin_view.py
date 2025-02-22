@@ -65,6 +65,25 @@ class AdminView(ctk.CTk):
         for row in students:
             self.tree.insert("", "end", values=row)
 
+    def on_select(self, event):
+        selected_item = self.tree.selection()
+        if selected_item:
+            self.add_btn.pack(side="left", padx=5)
+            self.edit_btn.pack(side="left", padx=5)
+            self.delite_btn.pack(side="left", padx=5)
+
+    def edit_student(self):
+        selected_item = self.tree.selection()
+        if selected_item:
+            student_date = self.tree.item(selected_item[0])['values']
+            self.tree.delete(selected_item[0])
+
+    def delete_student(self):
+        selected_item = self.tree.selection()
+        if selected_item:
+            student_date = self.tree.item(selected_item[0])['values']
+            self.tree.delete(selected_item[0])
+
     def show_teachers(self):
         pass
 

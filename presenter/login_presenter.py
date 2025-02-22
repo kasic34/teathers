@@ -1,11 +1,11 @@
 from model.user_crud import userCRUD
 from model.admin_crud import AdminModel
-from model.admin_view import AdminView
+from view.admin_view import AdminView
 
 class UserPresenter:
     def __init__(self, view):
         self.view = view
-        self.user_crud = userCRUD("student_management.db")
+        self.user_crud = userCRUD("model/student_management.db")
 
     def login(self, username, password):
         """ Проверяет логин пользователя и передаёт результат во View """

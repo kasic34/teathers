@@ -1,11 +1,14 @@
+import CTkMessagebox
 import customtkinter as ctk
+
 from customtkinter import set_default_color_theme, set_appearance_mode
 
 from presenter.login_presenter import UserPresenter
-from CTkMessagebox import CTkMessagebox
+
 
 class login_view(ctk.CTk):
     def __init__(self):
+        super().__init__()
         set_default_color_theme("green")
         set_appearance_mode("dark")
         self.title("Авторизация")
@@ -20,11 +23,11 @@ class login_view(ctk.CTk):
 
         # Пароль
         self.password_entry = ctk.CTkEntry(self, placeholder_text = "Пароль")
-        self.password_entry.grid(row=0, column=0, padx=5, pady=5)
+        self.password_entry.grid(row=1, column=0, padx=5, pady=5)
 
         # Кнопка входа
-        self.login_button = ctk.CTkButton(self, text="Войти")
-        self.login_button.grid(row=0, column=0, padx=5, pady=5)
+        self.login_button = ctk.CTkButton(self, text="Войти", command = self.login)
+        self.login_button.grid(row=2, column=0, padx=5, pady=5)
 
         self.presenter = UserPresenter(self)
 
@@ -36,9 +39,9 @@ class login_view(ctk.CTk):
 
     def show_message(self, message):
         """Вывод успешного сообщения"""
-        CTkMessagebox(title = "Успех", message=message, icon="check")
+        CTkMessagebox.CTkMessagebox(title = "Успех", message=message, icon="check")
 
     def show_error(self, message):
         """Вывод ошибки"""
-        CTkMessagebox(title="Ошибка", message=message, icon="cancel")
+        CTkMessagebox.CTkMessagebox(title="Ошибка", message=message, icon="cancel")
 

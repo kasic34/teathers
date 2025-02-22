@@ -1,7 +1,7 @@
 import sqlite3
 
 class userCRUD:
-    def __init__(self, db_path="student_management.db"):
+    def __init__(self, db_path="model/student_management.db"):
         self.db_patch=db_path
 
     def create_user(self, username, password, role):
