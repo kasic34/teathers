@@ -1,7 +1,7 @@
 import sqlite3
 
 class course_CRUD:
-    def __init__(self, db_path="student_management.db"):
+    def __init__(self, db_path="../student_management.db"):
         self.db_patch=db_path
 
     def create_course(self, title, description, teacher_id):

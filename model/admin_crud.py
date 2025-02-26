@@ -22,6 +22,14 @@ class AdminModel:
         connection.close()
         return result
 
+    def get_users(self):
+        connection = sqlite3.connect(self.db_path)
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM users")
+        result = cursor.fetchall()
+        connection.close()
+        return result
+
     def get_courses(self):
         connection = sqlite3.connect(self.db_path)
         cursor = connection.cursor()

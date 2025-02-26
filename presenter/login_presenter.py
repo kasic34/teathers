@@ -5,11 +5,11 @@ from view.admin_view import AdminView
 class UserPresenter:
     def __init__(self, view):
         self.view = view
-        self.user_crud = userCRUD("model/student_management.db")
+        self.user_crud = userCRUD("../student_management.db")
 
     def login(self, username, password):
         """ Проверяет логин пользователя и передаёт результат во View """
-        user = self.user_crud.get_user(username)
+        user = self.user_crud.get_users(username)
 
         if user:
             stored_password = user[2] # Пароль в БД

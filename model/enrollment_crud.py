@@ -2,7 +2,7 @@ import sqlite3
 
 
 class enrllment_CRUD:
-    def __init__(self, db_path="student_management.db"):
+    def __init__(self, db_path="../student_management.db"):
         self.db_patch = db_path
 
     def record_student_course(self, student_id, course_id, grade):

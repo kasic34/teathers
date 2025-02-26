@@ -1,7 +1,7 @@
 import sqlite3
 
 class userCRUD:
-    def __init__(self, db_path="model/student_management.db"):
+    def __init__(self, db_path="../student_management.db"):
         self.db_patch=db_path
 
     def create_user(self, username, password, role):
@@ -11,7 +11,7 @@ class userCRUD:
         conn.commit()
         conn.close()
 
-    def get_user(self, username):
+    def get_users(self, username):
         conn = sqlite3.connect(self.db_patch)
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
@@ -32,3 +32,4 @@ class userCRUD:
         cursor.execute("DELETE FROM users WHERE username = ?", (username, ))
         conn.commit()
         conn.close()
+

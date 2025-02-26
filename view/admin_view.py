@@ -1,7 +1,7 @@
 import tkinter.ttk
 import tkinter.ttk as ttk
 import customtkinter as ctk
-#from presenter.admin_presenter import AdminPresenter
+from presenter.admin_presenter import AdminPresenter
 
 
 class AdminView(ctk.CTk):
@@ -9,7 +9,7 @@ class AdminView(ctk.CTk):
         super().__init__()
 
         self.title("Админ-панель")
-        self.geometry("800x600")
+        self.geometry("1200x600")
 
         # Навигация
         self.nav_frame = ctk.CTkFrame(self)
@@ -17,6 +17,15 @@ class AdminView(ctk.CTk):
 
         self.students_btn = ctk.CTkButton(self.nav_frame, text = "Студенты", command = self.show_students)
         self.students_btn.pack(pady=10, padx=10)
+
+        self.teachers_btn = ctk.CTkButton(self.nav_frame, text="Преподователи", command=self.show_teachers)
+        self.teachers_btn.pack(pady=10, padx=10)
+
+        self.users_btn = ctk.CTkButton(self.nav_frame, text="Пользователи", command=self.show_users)
+        self.users_btn.pack(pady=10, padx=10)
+
+        self.course_btn = ctk.CTkButton(self.nav_frame, text="Курсы", command=self.show_course)
+        self.course_btn.pack(pady=10, padx=10)
 
         # Основной фрейм
         self.main_frame = ctk.CTkFrame(self)
@@ -78,20 +87,136 @@ class AdminView(ctk.CTk):
             student_date = self.tree.item(selected_item[0])['values']
             self.tree.delete(selected_item[0])
 
-    def delete_student(self):
+    def delete(self):
         selected_item = self.tree.selection()
         if selected_item:
             student_date = self.tree.item(selected_item[0])['values']
             self.tree.delete(selected_item[0])
 
+
     def show_teachers(self):
-        pass
+        """Вызывает загрузку студентов и отображает их"""
+        self.current_table = 'teachers'
+        self.clear_main_frame()
+        style = ttk.Style()
+        style.configure("Treeview", font=('Arial', '17'))
+        style.configure("Treeview.Heading", font=('Arial', '17', 'bold'))
+        ctk.CTkLabel(self.main_frame, text="Список преподователей", font=("Arial", 20)).pack(pady=10)
 
-    def show_courses(self):
-        pass
+        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "Имя", "Возраст", "Телефон", "ID пользователя"),
+                                 show="headings")
+        self.tree.heading('ID', text='ID', anchor='c')
+        self.tree.column('ID', width=50, anchor='c')
 
-    def show_enrollments(self):
-        pass
+        self.tree.heading('Имя', text='Имя', anchor='c')
+        self.tree.column('Имя', width=240, anchor='c')
+
+        self.tree.heading('Возраст', text='Возраст', anchor='c')
+        self.tree.column('Возраст', width=50, anchor='c')
+
+        self.tree.heading('Телефон', text='Телефон', anchor='c')
+        self.tree.column('Телефон', width=120, anchor='c')
+
+        self.tree.heading('ID пользователя', text='ID пользователя', anchor='c')
+        self.tree.column('ID пользователя', width=120, anchor='c')
+
+        self.tree.pack(expand=True, fill="both")
+
+        # Получаем данные из презентера
+        teachers = self.presenter.get_teachers()
+
+        # Отображаем данные
+        self.show_teachers_data(teachers)
+
+    def show_teachers_data(self,teachers):
+        """Отображает список студентов в таблице"""
+        self.tree.delete(*self.tree.get_children())
+        print(teachers)
+        for row in teachers:
+            self.tree.insert("", "end", values=row)
+
+
+    def show_course(self):
+        """Вызывает загрузку студентов и отображает их"""
+        self.current_table = 'course'
+        self.clear_main_frame()
+        style = ttk.Style()
+        style.configure("Treeview", font=('Arial', '17'))
+        style.configure("Treeview.Heading", font=('Arial', '17', 'bold'))
+        ctk.CTkLabel(self.main_frame, text="Список курсов", font=("Arial", 20)).pack(pady=10)
+
+        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "Имя", "Возраст", "Телефон", "ID пользователя"),
+                                 show="headings")
+        self.tree.heading('ID', text='ID', anchor='c')
+        self.tree.column('ID', width=50, anchor='c')
+
+        self.tree.heading('Имя', text='Имя', anchor='c')
+        self.tree.column('Имя', width=240, anchor='c')
+
+        self.tree.heading('Возраст', text='Возраст', anchor='c')
+        self.tree.column('Возраст', width=50, anchor='c')
+
+        self.tree.heading('Телефон', text='Телефон', anchor='c')
+        self.tree.column('Телефон', width=120, anchor='c')
+
+        self.tree.heading('ID пользователя', text='ID пользователя', anchor='c')
+        self.tree.column('ID пользователя', width=120, anchor='c')
+
+        self.tree.pack(expand=True, fill="both")
+
+        # Получаем данные из презентера
+        course = self.presenter.get_teachers()
+
+        # Отображаем данные
+        self.show_teachers_data(course)
+
+    def show_course_data(self, course):
+        """Отображает список студентов в таблице"""
+        self.tree.delete(*self.tree.get_children())
+        print(course)
+        for row in course:
+            self.tree.insert("", "end", values=row)
+
+    def show_enrollment(self):
+        """Вызывает загрузку студентов и отображает их"""
+        self.current_table = 'enrollment'
+        self.clear_main_frame()
+        style = ttk.Style()
+        style.configure("Treeview", font=('Arial', '17'))
+        style.configure("Treeview.Heading", font=('Arial', '17', 'bold'))
+        ctk.CTkLabel(self.main_frame, text="Список преподователей", font=("Arial", 20)).pack(pady=10)
+
+        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "Имя", "Возраст", "Телефон", "ID пользователя"),
+                                 show="headings")
+        self.tree.heading('ID', text='ID', anchor='c')
+        self.tree.column('ID', width=50, anchor='c')
+
+        self.tree.heading('Имя', text='Имя', anchor='c')
+        self.tree.column('Имя', width=240, anchor='c')
+
+        self.tree.heading('Возраст', text='Возраст', anchor='c')
+        self.tree.column('Возраст', width=50, anchor='c')
+
+        self.tree.heading('Телефон', text='Телефон', anchor='c')
+        self.tree.column('Телефон', width=120, anchor='c')
+
+        self.tree.heading('ID пользователя', text='ID пользователя', anchor='c')
+        self.tree.column('ID пользователя', width=120, anchor='c')
+
+        self.tree.pack(expand=True, fill="both")
+
+        # Получаем данные из презентера
+        enrollment = self.presenter.get_teachers()
+
+        # Отображаем данные
+        self.show_enrollment_data(enrollment)
+
+        def show_enrollment_data(self, enrollment):
+            """Отображает список студентов в таблице"""
+            self.tree.delete(*self.tree.get_children())
+            print(enrollment)
+            for row in enrollment:
+                self.tree.insert("", "end", values=row)
 
     def logout(self):
         pass
@@ -100,7 +225,45 @@ class AdminView(ctk.CTk):
         pass
 
     def show_users(self):
-        pass
+        """Вызывает загрузку студентов и отображает их"""
+        self.current_table = 'users'
+        self.clear_main_frame()
+        style = ttk.Style()
+        style.configure("Treeview", font=('Arial', '17'))
+        style.configure("Treeview.Heading", font=('Arial', '17', 'bold'))
+        ctk.CTkLabel(self.main_frame, text="Список пользователей", font=("Arial", 20)).pack(pady=10)
+
+        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "Имя", "Возраст", "Телефон", "ID пользователя"),
+                                 show="headings")
+        self.tree.heading('ID', text='ID', anchor='c')
+        self.tree.column('ID', width=50, anchor='c')
+
+        self.tree.heading('Имя', text='Имя', anchor='c')
+        self.tree.column('Имя', width=240, anchor='c')
+
+        self.tree.heading('Возраст', text='Возраст', anchor='c')
+        self.tree.column('Возраст', width=50, anchor='c')
+
+        self.tree.heading('Телефон', text='Телефон', anchor='c')
+        self.tree.column('Телефон', width=120, anchor='c')
+
+        self.tree.heading('ID пользователя', text='ID пользователя', anchor='c')
+        self.tree.column('ID пользователя', width=120, anchor='c')
+
+        self.tree.pack(expand=True, fill="both")
+
+        # Получаем данные из презентера
+        users = self.presenter.get_users()
+
+        # Отображаем данные
+        self.show_users_data(users)
+
+    def show_users_data(self, users):
+        """Отображает список студентов в таблице"""
+        self.tree.delete(*self.tree.get_children())
+        print(users)
+        for row in users:
+            self.tree.insert("", "end", values=row)
 
     def clear_main_frame(self):
         for widget in self.main_frame.winfo_children():

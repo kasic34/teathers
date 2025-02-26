@@ -12,22 +12,22 @@ class login_view(ctk.CTk):
         set_default_color_theme("green")
         set_appearance_mode("dark")
         self.title("Авторизация")
-        self.geometry("800x600")
+        self.geometry("200x200")
 
         self.columnconfigure(0, weight = 1)
         self.columnconfigure(1, weight = 2)
 
         # Логин
         self.username_entry = ctk.CTkEntry(self, placeholder_text = "Логин")
-        self.username_entry.grid(row=0, column=0, padx=5, pady=5)
+        self.username_entry.pack(pady=10)
 
         # Пароль
         self.password_entry = ctk.CTkEntry(self, placeholder_text = "Пароль")
-        self.password_entry.grid(row=1, column=0, padx=5, pady=5)
+        self.password_entry.pack(pady=10)
 
         # Кнопка входа
         self.login_button = ctk.CTkButton(self, text="Войти", command = self.login)
-        self.login_button.grid(row=2, column=0, padx=5, pady=5)
+        self.login_button.pack(pady=5)
 
         self.presenter = UserPresenter(self)
 
