@@ -15,24 +15,40 @@ class AdminView(ctk.CTk):
         self.nav_frame = ctk.CTkFrame(self)
         self.nav_frame.pack(side="left", fill = "y")
 
-        self.students_btn = ctk.CTkButton(self.nav_frame, text = "Студенты", command = self.show_students)
-        self.students_btn.pack(pady=10, padx=10)
 
-        self.teachers_btn = ctk.CTkButton(self.nav_frame, text="Преподователи", command=self.show_teachers)
-        self.teachers_btn.pack(pady=10, padx=10)
+
+        self.students_btn = ctk.CTkButton(self.nav_frame, text="Студенты", command=self.show_students)
+        self.students_btn.pack(pady=5, padx=5)
+
+        self.teachers_btn = ctk.CTkButton(self.nav_frame, text="Преподаватели", command=self.show_teachers)
+        self.teachers_btn.pack(pady=5, padx=5)
 
         self.users_btn = ctk.CTkButton(self.nav_frame, text="Пользователи", command=self.show_users)
-        self.users_btn.pack(pady=10, padx=10)
+        self.users_btn.pack(pady=5, padx=5)
 
-        self.course_btn = ctk.CTkButton(self.nav_frame, text="Курсы", command=self.show_course)
-        self.course_btn.pack(pady=10, padx=10)
+        self.courses_btn = ctk.CTkButton(self.nav_frame, text="Курсы", command=self.show_course)
+        self.courses_btn.pack(pady=5, padx=5)
 
-        # Основной фрейм
+        self.enrollments_btn = ctk.CTkButton(self.nav_frame, text="Записи", command=self.show_enrollment)
+        self.enrollments_btn.pack(pady=5, padx=5)
+
+        self.reports_btn = ctk.CTkButton(self.nav_frame, text="Отчёты")
+        self.reports_btn.pack(pady=5, padx=5)
+
+        self.logout_btn = ctk.CTkButton(self.nav_frame, text="Выход")
+        self.logout_btn.pack(side="bottom", pady=5)
+
         self.main_frame = ctk.CTkFrame(self)
         self.main_frame.pack(side="right", expand=True, fill="both")
-
+        self.action_frame = ctk.CTkFrame(self.main_frame)
+        self.action_frame.pack(side="bottom", fill="x", pady=10)
         # Презентер без связи с View
+        self.edit_btn = ctk.CTkButton(self.action_frame, text="Редактировать")
+        self.delete_btn = ctk.CTkButton(self.action_frame, text="Удалить", command=self.delete)
+
+
         self.presenter = AdminPresenter(self)
+
 
     def show_students(self):
         """Вызывает загрузку студентов и отображает их"""
@@ -70,14 +86,14 @@ class AdminView(ctk.CTk):
     def show_students_data(self, students):
         """Отображает список студентов в таблице"""
         self.tree.delete(*self.tree.get_children())
-        print(students)
+
         for row in students:
             self.tree.insert("", "end", values=row)
 
     def on_select(self, event):
         selected_item = self.tree.selection()
         if selected_item:
-            self.add_btn.pack(side="left", padx=5)
+            #self.add_btn.pack(side="left", padx=5)
             self.edit_btn.pack(side="left", padx=5)
             self.delite_btn.pack(side="left", padx=5)
 
@@ -131,7 +147,7 @@ class AdminView(ctk.CTk):
     def show_teachers_data(self,teachers):
         """Отображает список студентов в таблице"""
         self.tree.delete(*self.tree.get_children())
-        print(teachers)
+
         for row in teachers:
             self.tree.insert("", "end", values=row)
 
@@ -166,14 +182,13 @@ class AdminView(ctk.CTk):
 
         # Получаем данные из презентера
         course = self.presenter.get_teachers()
-
+        self.tree.bind("<<TreeviewSelect>>", self.on_select)
         # Отображаем данные
         self.show_teachers_data(course)
 
     def show_course_data(self, course):
         """Отображает список студентов в таблице"""
         self.tree.delete(*self.tree.get_children())
-        print(course)
         for row in course:
             self.tree.insert("", "end", values=row)
 
@@ -251,7 +266,7 @@ class AdminView(ctk.CTk):
         self.tree.column('ID пользователя', width=120, anchor='c')
 
         self.tree.pack(expand=True, fill="both")
-
+        self.tree.bind("<<TreeviewSelect>>", self.on_select)
         # Получаем данные из презентера
         users = self.presenter.get_users()
 
@@ -261,14 +276,12 @@ class AdminView(ctk.CTk):
     def show_users_data(self, users):
         """Отображает список студентов в таблице"""
         self.tree.delete(*self.tree.get_children())
-        print(users)
         for row in users:
             self.tree.insert("", "end", values=row)
 
     def clear_main_frame(self):
         for widget in self.main_frame.winfo_children():
             widget.destroy()
-
 
 if __name__ == "__main__":
     app = AdminView()
