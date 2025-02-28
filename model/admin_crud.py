@@ -46,3 +46,10 @@ class AdminModel:
         result = cursor.fetchall()
         connection.close()
         return result
+
+    def db_delete(self, name):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM users WHERE name = ?", (name, ))
+        conn.commit()
+        conn.close()
