@@ -1,6 +1,6 @@
 import sqlite3
 
-class course_CRUD:
+class CourseCRUD:
     def __init__(self, db_path="../student_management.db"):
         self.db_patch=db_path
 
@@ -40,9 +40,9 @@ class course_CRUD:
         conn.commit()
         conn.close()
 
-    def delete_course(self, title):
+    def delete_course(self, course_id):
         conn = sqlite3.connect(self.db_patch)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM courses WHERE title = ?", (title, ))
+        cursor.execute("DELETE FROM courses WHERE course_id = ?", (course_id, ))
         conn.commit()
         conn.close()

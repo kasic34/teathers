@@ -26,3 +26,6 @@ class UserPresenter:
     def open_dashboard(self, role):
 
         self.view.show_message(f"Вход выполнен! Роль: {role}")
+
+    def delete_user(self,id):
+        self.user_crud.delete_user(id)

@@ -28,9 +28,9 @@ class enrllment_CRUD:
         conn.close()
 
 
-    def delete_student_course(self, student_id, courses_id):
+    def delete_student_course(self, enrollment_id):
         conn = sqlite3.connect(self.db_patch)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM enrollments WHERE student_id = ? AND course_id = ?", (student_id, courses_id))
+        cursor.execute("DELETE FROM enrollments WHERE enrollment_id =?", (enrollment_id,))
         conn.commit()
         conn.close()

@@ -7,7 +7,6 @@ from presenter.admin_presenter import AdminPresenter
 class AdminView(ctk.CTk):
     def __init__(self):
         super().__init__()
-
         self.title("Админ-панель")
         self.geometry("1200x600")
 
@@ -34,7 +33,7 @@ class AdminView(ctk.CTk):
         self.reports_btn = ctk.CTkButton(self.nav_frame, text="Отчёты")
         self.reports_btn.pack(pady=5, padx=5)
 
-        self.logout_btn = ctk.CTkButton(self.nav_frame, text="Выход")
+        self.logout_btn = ctk.CTkButton(self.nav_frame, text="Выход", command=self.exit)
         self.logout_btn.pack(side="bottom", pady=5)
 
         self.main_frame = ctk.CTkFrame(self)
@@ -50,10 +49,13 @@ class AdminView(ctk.CTk):
 
         self.presenter = AdminPresenter(self)
 
+    def exit(self):
+        self.quit()
 
     def show_students(self):
         """Вызывает загрузку студентов и отображает их"""
         self.clear_main_frame()
+        self.current_table = 'students'
         style = ttk.Style()
         style.configure("Treeview", font=('Arial', '17'))
         style.configure("Treeview.Heading", font=('Arial', '17', 'bold'))
@@ -106,22 +108,39 @@ class AdminView(ctk.CTk):
 
     def delete(self):
         selected_item = self.tree.selection()
+        print(self.current_table)
         if selected_item:
-            student_date = self.tree.item(selected_item[0])['values']
-            self.tree.delete(selected_item[0])
+            student_data = self.tree.item(selected_item[0])['values']
+            if self.current_table  == 'users':
+                from presenter.login_presenter import UserPresenter
+                self.current_presenter = UserPresenter(self)
+                self.current_presenter.delete_user(student_data[0])
+                self.tree.delete(selected_item[0])
+            elif self.current_table  == 'students':
+                from presenter.student_presenter import StudentPresenter
+                self.current_presenter = StudentPresenter(self)
+                self.current_presenter.delete_student(student_data[0])
+                self.tree.delete(selected_item[0])
+            elif self.current_table  == 'teachers':
+                print(1)
+                from presenter.teacher_presenter import TeacherPresenter
+                self.current_presenter = TeacherPresenter(self)
+                self.current_presenter.delete_teacher(student_data[0])
+                self.tree.delete(selected_item[0])
 
 
 
     def show_teachers(self):
         """Вызывает загрузку студентов и отображает их"""
         self.current_table = 'teachers'
+        print(self.current_table)
         self.clear_main_frame()
         style = ttk.Style()
         style.configure("Treeview", font=('Arial', '17'))
         style.configure("Treeview.Heading", font=('Arial', '17', 'bold'))
         ctk.CTkLabel(self.main_frame, text="Список преподователей", font=("Arial", 20)).pack(pady=10)
 
-        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "Имя", "Возраст", "Телефон", "ID пользователя"),
+        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "Имя", "Телефон", "ID пользователя"),
                                  show="headings")
         self.tree.heading('ID', text='ID', anchor='c')
         self.tree.column('ID', width=50, anchor='c')
@@ -160,16 +179,19 @@ class AdminView(ctk.CTk):
         style.configure("Treeview.Heading", font=('Arial', '17', 'bold'))
         ctk.CTkLabel(self.main_frame, text="Список курсов", font=("Arial", 20)).pack(pady=10)
 
-        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "Имя", "Возраст", "Телефон", "ID пользователя"),
+        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "Название", "Описание", "ID преподавателя"),
                                  show="headings")
         self.tree.heading('ID', text='ID', anchor='c')
         self.tree.column('ID', width=50, anchor='c')
 
-        self.tree.heading('Имя', text='Название', anchor='c')
-        self.tree.column('Имя', width=240, anchor='c')
+        self.tree.heading('Название', text='Название', anchor='c')
+        self.tree.column('Название', width=240, anchor='c')
 
-        self.tree.heading('ID пользователя', text='ID пользователя', anchor='c')
-        self.tree.column('ID пользователя', width=120, anchor='c')
+        self.tree.heading('Описание', text='Описание', anchor='c')
+        self.tree.column('Описание', width=120, anchor='c')
+
+        self.tree.heading('ID преподавателя', text='Преподаватель', anchor='c')
+        self.tree.column('ID преподавателя', width=120, anchor='c')
 
         self.tree.pack(expand=True, fill="both")
 
@@ -187,29 +209,26 @@ class AdminView(ctk.CTk):
 
     def show_enrollment(self):
         """Вызывает загрузку студентов и отображает их"""
-        self.current_table = 'enrollment'
+        self.current_table = 'enrollments'
         self.clear_main_frame()
         style = ttk.Style()
         style.configure("Treeview", font=('Arial', '17'))
         style.configure("Treeview.Heading", font=('Arial', '17', 'bold'))
-        ctk.CTkLabel(self.main_frame, text="Список преподователей", font=("Arial", 20)).pack(pady=10)
+        ctk.CTkLabel(self.main_frame, text="Список запесей", font=("Arial", 20)).pack(pady=10)
 
-        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "Имя", "Возраст", "Телефон", "ID пользователя"),
+        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "ID студента", "ID преподавателя", "Оценка"),
                                  show="headings")
         self.tree.heading('ID', text='ID', anchor='c')
         self.tree.column('ID', width=50, anchor='c')
 
-        self.tree.heading('Имя', text='Имя', anchor='c')
-        self.tree.column('Имя', width=240, anchor='c')
+        self.tree.heading('ID студента', text='Студенты', anchor='c')
+        self.tree.column('ID студента', width=120, anchor='c')
 
-        self.tree.heading('Возраст', text='Возраст', anchor='c')
-        self.tree.column('Возраст', width=50, anchor='c')
+        self.tree.heading('ID преподавателя', text='Преподаватель', anchor='c')
+        self.tree.column('ID преподавателя', width=120, anchor='c')
 
-        self.tree.heading('Телефон', text='Телефон', anchor='c')
-        self.tree.column('Телефон', width=120, anchor='c')
-
-        self.tree.heading('ID пользователя', text='ID пользователя', anchor='c')
-        self.tree.column('ID пользователя', width=120, anchor='c')
+        self.tree.heading('Оценка', text='Оценки', anchor='c')
+        self.tree.column('Оценка', width=50, anchor='c')
 
         self.tree.pack(expand=True, fill="both")
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
@@ -241,7 +260,7 @@ class AdminView(ctk.CTk):
         style.configure("Treeview.Heading", font=('Arial', '17', 'bold'))
         ctk.CTkLabel(self.main_frame, text="Список пользователей", font=("Arial", 20)).pack(pady=10)
 
-        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "Имя", "Возраст", "Телефон", "ID пользователя"),
+        self.tree = ttk.Treeview(self.main_frame, columns=("ID", "Имя", "Пароль", "Роль"),
                                  show="headings")
         self.tree.heading('ID', text='ID', anchor='c')
         self.tree.column('ID', width=50, anchor='c')
@@ -249,14 +268,11 @@ class AdminView(ctk.CTk):
         self.tree.heading('Имя', text='Имя', anchor='c')
         self.tree.column('Имя', width=240, anchor='c')
 
-        self.tree.heading('Возраст', text='Возраст', anchor='c')
-        self.tree.column('Возраст', width=50, anchor='c')
+        self.tree.heading('Пароль', text='Пароль', anchor='c')
+        self.tree.column('Пароль', width=50, anchor='c')
 
-        self.tree.heading('Телефон', text='Телефон', anchor='c')
-        self.tree.column('Телефон', width=120, anchor='c')
-
-        self.tree.heading('ID пользователя', text='ID пользователя', anchor='c')
-        self.tree.column('ID пользователя', width=120, anchor='c')
+        self.tree.heading('Роль', text='Роль', anchor='c')
+        self.tree.column('Роль', width=120, anchor='c')
 
         self.tree.pack(expand=True, fill="both")
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
