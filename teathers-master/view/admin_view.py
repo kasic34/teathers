@@ -43,6 +43,7 @@ class AdminView(ctk.CTk):
         self.action_frame.pack(side="bottom", fill="x", pady=10)
         # Презентер без связи с View
         self.add_btn = ctk.CTkButton(self.action_frame, text="Создать", command = self.set_add_button)
+        self.add_btn.pack(side="right", padx=5)
         self.edit_btn = ctk.CTkButton(self.action_frame, text="Редактировать")
         self.delete_btn = ctk.CTkButton(self.action_frame, text="Удалить", command=self.delete)
 
@@ -98,7 +99,7 @@ class AdminView(ctk.CTk):
         if selected_item:
             self.delete_btn.pack(side = 'right', padx=5)
             self.edit_btn.pack(side='right', padx=5)
-            self.add_btn.pack(side="right", padx=5)
+
 
     def edit_student(self):
         selected_item = self.tree.selection()
@@ -295,30 +296,119 @@ class AdminView(ctk.CTk):
 
     def add_user_window(self):
         ''' интерфейс: поля для ввода и кнопка "сохранить" '''
-        self.add_user = ctk.CTk()
-        self.title("Админ-панель")
-        self.geometry("1200x600")
-        ctk.CTkLabel(self.add_user, text = "Добавить")
-        ctk.CTkEntry(self.add_user, placeholder_text = "Имя")
-        ctk.CTkEntry(self.add_user, placeholder_text="Пороль")
-        ctk.CTkEntry(self.add_user, placeholder_text="Роль")
+        add_user = ctk.CTk()
+        add_user.title("Админ-панель")
+        add_user.geometry("1200x600")
+        from presenter.login_presenter import UserPresenter
+        self.current_presenter = UserPresenter(self)
+        label = ctk.CTkLabel(add_user, text = "Добавить")
+        name_entry = ctk.CTkEntry(add_user, placeholder_text = "Имя")
+        name_entry.pack(pady=10)
+        password_entry = ctk.CTkEntry(add_user, placeholder_text="Пороль")
+        password_entry.pack(pady=10)
+        role_entry = ctk.CTkEntry(add_user, placeholder_text="Роль")
+        role_entry.pack(pady=10)
 
         def save():
-            ''' закрыть окно
-            self.presenter.
-            внести данные в БД (вызвать метод из презентера
-            self.presenter.
-            обновить данные в таблице (self.show_users_data)
-            self.show_users_data()
-            '''
+            add_user.withdraw()
+            self.current_presenter.create_user(name_entry.get(),password_entry.get(), role_entry.get())
+            users = self.presenter.get_users()
+            self.show_users_data(users)
 
         ''' описание кнопки сохранить'''
-        ctk.CTkButton(self.add_user, text = "Сохранить", command = save)
+        save_button = ctk.CTkButton(add_user, text = "Сохранить", command = save)
+        save_button.pack(pady=10)
+        add_user.mainloop()
+
     def add_student_window(self):
+        ''' интерфейс: поля для ввода и кнопка "сохранить" '''
+        add_student = ctk.CTk()
+        add_student.title("Админ-панель")
+        add_student.geometry("1200x600")
+        from presenter.login_presenter import UserPresenter
+        self.current_presenter = StudentPresenter(self)
+        label = ctk.CTkLabel(add_student, text = "Добавить")
+        name_entry = ctk.CTkEntry(add_student, placeholder_text = "Имя")
+        name_entry.pack(pady=10)
+        password_entry = ctk.CTkEntry(add_student, placeholder_text="Пороль")
+        password_entry.pack(pady=10)
+        role_entry = ctk.CTkEntry(add_student, placeholder_text="Роль")
+        role_entry.pack(pady=10)
+
+        def save():
+            add_student.withdraw()
+            self.current_presenter.create_student(name_entry.get(),password_entry.get(), role_entry.get())
+            users = self.presenter.get_users()
+            self.show_users_data(users)
+
+        ''' описание кнопки сохранить'''
+        save_button = ctk.CTkButton(add_student, text = "Сохранить", command = save)
+        save_button.pack(pady=10)
+        add_student.mainloop()
+
+    def add_teacher_window(self):
+        ''' интерфейс: поля для ввода и кнопка "сохранить" '''
+        add_teacher = ctk.CTk()
+        add_teacher.title("Админ-панель")
+        add_teacher.geometry("1200x600")
+        from presenter.login_presenter import UserPresenter
+        self.current_presenter = UserPresenter(self)
+        label = ctk.CTkLabel(add_teacher, text = "Добавить")
+        name_entry = ctk.CTkEntry(add_teacher, placeholder_text = "Имя")
+        name_entry.pack(pady=10)
+        tel_entry = ctk.CTkEntry(add_teacher, placeholder_text="Телефон")
+        tel_entry.pack(pady=10)
+        role_entry = ctk.CTkEntry(add_teacher, placeholder_text="Роль")
+        role_entry.pack(pady=10)
+
+        def save():
+            add_teacher.withdraw()
+            self.current_presenter.create_teacher(name_entry.get(),tel_entry.get(), role_entry.get())
+            users = self.presenter.get_users()
+            self.show_users_data(users)
+
+        ''' описание кнопки сохранить'''
+        save_button = ctk.CTkButton(add_teacher, text = "Сохранить", command = save)
+        save_button.pack(pady=10)
+        add_teacher.mainloop()
+
+    def add_course_window(self):
+        ''' интерфейс: поля для ввода и кнопка "сохранить" '''
+        add_course = ctk.CTk()
+        add_course.title("Админ-панель")
+        add_course.geometry("1200x600")
+        from presenter.login_presenter import UserPresenter
+        self.current_presenter = UserPresenter(self)
+        label = ctk.CTkLabel(add_course, text = "Добавить")
+        name_entry = ctk.CTkEntry(add_course, placeholder_text = "Имя")
+        name_entry.pack(pady=10)
+        password_entry = ctk.CTkEntry(add_course, placeholder_text="Пороль")
+        password_entry.pack(pady=10)
+        role_entry = ctk.CTkEntry(add_course, placeholder_text="Роль")
+        role_entry.pack(pady=10)
+
+        def save():
+            add_course.withdraw()
+            self.current_presenter.create_user(name_entry.get(),password_entry.get(), role_entry.get())
+            users = self.presenter.get_users()
+            self.show_users_data(users)
+
+        ''' описание кнопки сохранить'''
+        save_button = ctk.CTkButton(add_course, text = "Сохранить", command = save)
+        save_button.pack(pady=10)
+        add_course.mainloop()
 
     def set_add_button(self):
         if self.current_table == 'users':
             self.add_user_window()
+        elif self.current_table == 'students':
+            self.add_student_window()
+        elif self.current_table == 'teachers':
+            self.add_teacher_window()
+        elif self.current_table == 'course':
+            self.add_course_window()
+
+
 
 if __name__ == "__main__":
     app = AdminView()

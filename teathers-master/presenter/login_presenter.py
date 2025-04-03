@@ -7,6 +7,18 @@ class UserPresenter:
         self.view = view
         self.user_crud = userCRUD("../student_management.db")
 
+    def create_user(self,username, password, role):
+        self.user_crud.create_user(username, password, role)
+
+    def create_student(self,name, age, phone, user_id):
+        self.user_crud.create_user(name, age, phone, user_id)
+
+    def create_teacher(self, name, phone, user_id):
+        self.user_crud.create_user( name, phone, user_id)
+
+    def create_course(self, title, description, teacher_id):
+        self.user_crud.create_user(title, description, teacher_id)
+
     def login(self, username, password):
         """ Проверяет логин пользователя и передаёт результат во View """
         user = self.user_crud.get_users(username)
