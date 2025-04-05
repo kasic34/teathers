@@ -1,7 +1,13 @@
 import tkinter.ttk
 import tkinter.ttk as ttk
 import customtkinter as ctk
+from tkinter import simpledialog
+from tkinter import filedialog
+
+from model.course_clud import CourseCRUD
 from presenter.admin_presenter import AdminPresenter
+from presenter.enrollment_presener import EnrollmentPresenter
+from presenter.teacher_presenter import TeacherPresenter
 
 
 class AdminView(ctk.CTk):
@@ -53,6 +59,10 @@ class AdminView(ctk.CTk):
     def exit(self):
         self.quit()
 
+
+
+
+
     def show_students(self):
         """Вызывает загрузку студентов и отображает их"""
         self.clear_main_frame()
@@ -86,6 +96,33 @@ class AdminView(ctk.CTk):
 
         # Отображаем данные
         self.show_students_data(students)
+
+    def on_cell_double_click(self, event):
+        selected_item = self.tree.selection()
+
+        if not selected_item:
+            return
+
+        column_id = self.tree.identify_column(event.x)  # Определяем колонку
+        column_index = int(column_id[1:]) - 1
+        # Получаем индекс (Tkinter считает с 1)
+        column_header = self.tree["columns"][column_index]  # Название колонки
+        item = self.tree.item(selected_item)
+        print(item)
+        # Получаем данные строки
+        entry_id = item["values"][0]  # ID записи
+        old_value = item["values"][column_index]  # Текущее значение ячейки
+        column_name = self.column_mapping.get(column_header)
+        print(column_name)
+        # Запрашиваем новое значение
+        new_value = simpledialog.askstring("Редактирование", f"Новое значение для {column_name}:",
+                                           initialvalue=old_value)
+
+        if new_value and new_value != old_value:
+            self.presenter.update_cell(self.current_table, entry_id, column_name, new_value)
+        users = self.presenter.get_users()
+        self.show_users_data(users)
+
 
     def show_students_data(self, students):
         """Отображает список студентов в таблице"""
@@ -123,10 +160,19 @@ class AdminView(ctk.CTk):
                 self.current_presenter.delete_student(student_data[0])
                 self.tree.delete(selected_item[0])
             elif self.current_table  == 'teachers':
-                print(1)
                 from presenter.teacher_presenter import TeacherPresenter
                 self.current_presenter = TeacherPresenter(self)
                 self.current_presenter.delete_teacher(student_data[0])
+                self.tree.delete(selected_item[0])
+            elif self.current_table  == 'course':
+                from presenter.course_presenter import CoursePresenter
+                self.current_presenter = CoursePresenter(self)
+                self.current_presenter.delete_course(student_data[0])
+                self.tree.delete(selected_item[0])
+            elif self.current_table  == 'enrollments':
+                from presenter.enrollment_presener import EnrollmentPresenter
+                self.current_presenter = EnrollmentPresenter(self)
+                self.current_presenter.delete_enrollment(student_data[0])
                 self.tree.delete(selected_item[0])
 
 
@@ -197,10 +243,10 @@ class AdminView(ctk.CTk):
         self.tree.pack(expand=True, fill="both")
 
         # Получаем данные из презентера
-        course = self.presenter.get_teachers()
+        course = self.presenter.get_courses()
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
         # Отображаем данные
-        self.show_teachers_data(course)
+        self.show_course_data(course)
 
     def show_course_data(self, course):
         """Отображает список студентов в таблице"""
@@ -234,7 +280,7 @@ class AdminView(ctk.CTk):
         self.tree.pack(expand=True, fill="both")
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
         # Получаем данные из презентера
-        enrollment = self.presenter.get_teachers()
+        enrollment = self.presenter.get_enrollments()
 
         # Отображаем данные
         self.show_enrollment_data(enrollment)
@@ -275,8 +321,16 @@ class AdminView(ctk.CTk):
         self.tree.heading('Роль', text='Роль', anchor='c')
         self.tree.column('Роль', width=120, anchor='c')
 
+        self.column_mapping = {
+            "ID": "user_id",
+            "Имя": "username",
+            "Пароль": "password",
+            "Роль": "role"
+        }
+
         self.tree.pack(expand=True, fill="both")
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
+        self.tree.bind("<Double-1>", self.on_cell_double_click)
         # Получаем данные из презентера
         users = self.presenter.get_users()
 
@@ -325,21 +379,23 @@ class AdminView(ctk.CTk):
         add_student = ctk.CTk()
         add_student.title("Админ-панель")
         add_student.geometry("1200x600")
-        from presenter.login_presenter import UserPresenter
+        from presenter.student_presenter import StudentPresenter
         self.current_presenter = StudentPresenter(self)
         label = ctk.CTkLabel(add_student, text = "Добавить")
-        name_entry = ctk.CTkEntry(add_student, placeholder_text = "Имя")
-        name_entry.pack(pady=10)
-        password_entry = ctk.CTkEntry(add_student, placeholder_text="Пороль")
-        password_entry.pack(pady=10)
-        role_entry = ctk.CTkEntry(add_student, placeholder_text="Роль")
-        role_entry.pack(pady=10)
+        name_students_entry = ctk.CTkEntry(add_student, placeholder_text = "Имя")
+        name_students_entry.pack(pady=10)
+        age_students_entry = ctk.CTkEntry(add_student, placeholder_text="Возраст")
+        age_students_entry.pack(pady=10)
+        tel_students_entry = ctk.CTkEntry(add_student, placeholder_text="Телефон")
+        tel_students_entry.pack(pady=10)
+        ID_entry = ctk.CTkEntry(add_student, placeholder_text="ID Пользователя")
+        ID_entry.pack(pady=10)
 
         def save():
             add_student.withdraw()
-            self.current_presenter.create_student(name_entry.get(),password_entry.get(), role_entry.get())
-            users = self.presenter.get_users()
-            self.show_users_data(users)
+            self.current_presenter.create_student(name_students_entry.get(), age_students_entry.get(), tel_students_entry.get(), ID_entry.get())
+            students = self.presenter.get_students()
+            self.show_students_data(students)
 
         ''' описание кнопки сохранить'''
         save_button = ctk.CTkButton(add_student, text = "Сохранить", command = save)
@@ -351,21 +407,21 @@ class AdminView(ctk.CTk):
         add_teacher = ctk.CTk()
         add_teacher.title("Админ-панель")
         add_teacher.geometry("1200x600")
-        from presenter.login_presenter import UserPresenter
-        self.current_presenter = UserPresenter(self)
+        from presenter.teacher_presenter import TeacherPresenter
+        self.current_presenter = TeacherPresenter(self)
         label = ctk.CTkLabel(add_teacher, text = "Добавить")
         name_entry = ctk.CTkEntry(add_teacher, placeholder_text = "Имя")
         name_entry.pack(pady=10)
         tel_entry = ctk.CTkEntry(add_teacher, placeholder_text="Телефон")
         tel_entry.pack(pady=10)
-        role_entry = ctk.CTkEntry(add_teacher, placeholder_text="Роль")
-        role_entry.pack(pady=10)
+        ID_entry = ctk.CTkEntry(add_teacher, placeholder_text="ID Пользователя")
+        ID_entry.pack(pady=10)
 
         def save():
             add_teacher.withdraw()
-            self.current_presenter.create_teacher(name_entry.get(),tel_entry.get(), role_entry.get())
-            users = self.presenter.get_users()
-            self.show_users_data(users)
+            self.current_presenter.create_teacher(name_entry.get(),tel_entry.get(), ID_entry.get())
+            teachers = self.presenter.get_teachers()
+            self.show_users_data(teachers)
 
         ''' описание кнопки сохранить'''
         save_button = ctk.CTkButton(add_teacher, text = "Сохранить", command = save)
@@ -377,26 +433,52 @@ class AdminView(ctk.CTk):
         add_course = ctk.CTk()
         add_course.title("Админ-панель")
         add_course.geometry("1200x600")
-        from presenter.login_presenter import UserPresenter
-        self.current_presenter = UserPresenter(self)
+        from presenter.course_presenter import CoursePresenter
+        self.current_presenter = CoursePresenter(self)
         label = ctk.CTkLabel(add_course, text = "Добавить")
-        name_entry = ctk.CTkEntry(add_course, placeholder_text = "Имя")
+        name_entry = ctk.CTkEntry(add_course, placeholder_text = "Название")
         name_entry.pack(pady=10)
-        password_entry = ctk.CTkEntry(add_course, placeholder_text="Пороль")
-        password_entry.pack(pady=10)
-        role_entry = ctk.CTkEntry(add_course, placeholder_text="Роль")
-        role_entry.pack(pady=10)
+        description_entry = ctk.CTkEntry(add_course, placeholder_text="Описание")
+        description_entry.pack(pady=10)
+        teachers_entry = ctk.CTkEntry(add_course, placeholder_text="Преподователь")
+        teachers_entry.pack(pady=10)
 
         def save():
             add_course.withdraw()
-            self.current_presenter.create_user(name_entry.get(),password_entry.get(), role_entry.get())
-            users = self.presenter.get_users()
-            self.show_users_data(users)
+            self.current_presenter.create_course(name_entry.get(), description_entry.get(), teachers_entry.get())
+            courses = self.presenter.get_courses()
+            self.show_users_data(courses)
 
         ''' описание кнопки сохранить'''
         save_button = ctk.CTkButton(add_course, text = "Сохранить", command = save)
         save_button.pack(pady=10)
         add_course.mainloop()
+
+    def add_enrollment_window(self):
+        ''' интерфейс: поля для ввода и кнопка "сохранить" '''
+        add_enrollment = ctk.CTk()
+        add_enrollment.title("Админ-панель")
+        add_enrollment.geometry("1200x600")
+        from presenter.enrollment_presener import EnrollmentPresenter
+        self.current_presenter = EnrollmentPresenter(self)
+        label = ctk.CTkLabel(add_enrollment, text = "Добавить")
+        students_entry = ctk.CTkEntry(add_enrollment, placeholder_text = "Студент")
+        students_entry.pack(pady=10)
+        teachers_entry = ctk.CTkEntry(add_enrollment, placeholder_text="Преподователь")
+        teachers_entry.pack(pady=10)
+        grade_entry = ctk.CTkEntry(add_enrollment, placeholder_text="Оценки")
+        grade_entry.pack(pady=10)
+
+        def save():
+            add_enrollment.withdraw()
+            self.current_presenter.create_enrollment(students_entry.get(), teachers_entry.get(), grade_entry.get())
+            enrollment = self.presenter.get_enrollments()
+            self.show_users_data(enrollment)
+
+        ''' описание кнопки сохранить'''
+        save_button = ctk.CTkButton(add_enrollment, text = "Сохранить", command = save)
+        save_button.pack(pady=10)
+        add_enrollment.mainloop()
 
     def set_add_button(self):
         if self.current_table == 'users':
@@ -407,6 +489,8 @@ class AdminView(ctk.CTk):
             self.add_teacher_window()
         elif self.current_table == 'course':
             self.add_course_window()
+        elif self.current_table=='enrollments':
+            self.add_enrollment_window()
 
 
 

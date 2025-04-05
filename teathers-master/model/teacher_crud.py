@@ -7,7 +7,7 @@ class TeacherCRUD:
     def create_teacher(self, name, phone, user_id):
         conn = sqlite3.connect(self.db_patch)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO teachers (name, phone, user_id) VALUES (?, ?, ?, ?)",
+        cursor.execute("INSERT INTO teachers (name, phone, user_id) VALUES (?, ?, ?)",
                        (name, phone, user_id))
         conn.commit()
         conn.close()
@@ -37,6 +37,6 @@ class TeacherCRUD:
     def delete_teacher(self, teacher_id):
         conn = sqlite3.connect(self.db_patch)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM teachers WHERE teacher_id = ?", (teacher_id,))
+        cursor.execute("DELETE FROM teachers WHERE id = ?", (teacher_id,))
         conn.commit()
         conn.close()

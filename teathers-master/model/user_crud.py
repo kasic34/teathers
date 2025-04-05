@@ -29,7 +29,7 @@ class userCRUD:
     def delete_user(self, id):
         conn = sqlite3.connect(self.db_patch)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM users WHERE user_id = ?", (id, ))
+        cursor.execute("DELETE FROM users WHERE id = ?", (id, ))
         conn.commit()
         conn.close()
 

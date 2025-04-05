@@ -1,7 +1,7 @@
 import sqlite3
 
 
-class enrllment_CRUD:
+class enrollmentCRUD:
     def __init__(self, db_path="../student_management.db"):
         self.db_patch = db_path
 
@@ -32,5 +32,13 @@ class enrllment_CRUD:
         conn = sqlite3.connect(self.db_patch)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM enrollments WHERE enrollment_id =?", (enrollment_id,))
+        conn.commit()
+        conn.close()
+
+    def create_enrollment(self, student_id, teacher_id, grade):
+        conn = sqlite3.connect(self.db_patch)
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO enrollments (student_id, teacher_id, grade) VALUES (?, ?, ?)",
+                       (student_id, teacher_id, grade))
         conn.commit()
         conn.close()

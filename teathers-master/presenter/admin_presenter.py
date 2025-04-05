@@ -20,3 +20,6 @@ class AdminPresenter:
 
     def get_enrollments(self):
         return self.admin_crud.get_enrollments()
+
+    def update_cell(self, table, entry_id, column, new_value):
+        self.admin_crud.update_cell(table, entry_id, column, new_value)

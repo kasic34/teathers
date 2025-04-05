@@ -53,3 +53,10 @@ class AdminModel:
         cursor.execute("DELETE FROM users WHERE name = ?", (name, ))
         conn.commit()
         conn.close()
+
+    def update_cell(self, table, entry_id, column, new_value):
+        connection = sqlite3.connect(self.db_path)
+        cursor = connection.cursor()
+        cursor.execute(f"UPDATE {table} SET {column} = ? WHERE id = ?", (new_value, entry_id))
+        connection.commit()
+        connection.close()
