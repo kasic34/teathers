@@ -50,7 +50,7 @@ class AdminView(ctk.CTk):
         # Презентер без связи с View
         self.add_btn = ctk.CTkButton(self.action_frame, text="Создать", command = self.set_add_button)
         self.add_btn.pack(side="right", padx=5)
-        self.edit_btn = ctk.CTkButton(self.action_frame, text="Редактировать")
+
         self.delete_btn = ctk.CTkButton(self.action_frame, text="Удалить", command=self.delete)
 
 
@@ -58,9 +58,6 @@ class AdminView(ctk.CTk):
 
     def exit(self):
         self.quit()
-
-
-
 
 
     def show_students(self):
@@ -89,13 +86,24 @@ class AdminView(ctk.CTk):
         self.tree.heading('ID пользователя', text='ID пользователя', anchor='c')
         self.tree.column('ID пользователя', width=120, anchor='c')
 
+        self.column_mapping = {
+            "ID": "id",
+            "Имя": "name",
+            "Возраст": "age",
+            "Телефон": "phone",
+            "ID пользователя": "user_id"
+        }
+
         self.tree.pack(expand=True, fill="both")
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
+        self.tree.bind("<Double-1>", self.on_cell_double_click)
         # Получаем данные из презентера
         students = self.presenter.get_students()
 
         # Отображаем данные
         self.show_students_data(students)
+
+
 
     def on_cell_double_click(self, event):
         selected_item = self.tree.selection()
@@ -120,8 +128,22 @@ class AdminView(ctk.CTk):
 
         if new_value and new_value != old_value:
             self.presenter.update_cell(self.current_table, entry_id, column_name, new_value)
-        users = self.presenter.get_users()
-        self.show_users_data(users)
+
+        if self.current_table == 'users':
+            users = self.presenter.get_users()
+            self.show_users_data(users)
+        elif self.current_table == 'students':
+            student = self.presenter.get_students()
+            self.show_students_data(student)
+        elif self.current_table == 'teachers':
+            teachers = self.presenter.get_teachers()
+            self.show_teachers_data(teachers)
+        elif self.current_table == 'courses':
+            course = self.presenter.get_courses()
+            self.show_course_data(course)
+        elif self.current_table=='enrollments':
+            enrollments = self.presenter.get_enrollments()
+            self.show_enrollment_data(enrollments)
 
 
     def show_students_data(self, students):
@@ -164,7 +186,7 @@ class AdminView(ctk.CTk):
                 self.current_presenter = TeacherPresenter(self)
                 self.current_presenter.delete_teacher(student_data[0])
                 self.tree.delete(selected_item[0])
-            elif self.current_table  == 'course':
+            elif self.current_table  == 'courses':
                 from presenter.course_presenter import CoursePresenter
                 self.current_presenter = CoursePresenter(self)
                 self.current_presenter.delete_course(student_data[0])
@@ -201,8 +223,16 @@ class AdminView(ctk.CTk):
         self.tree.heading('ID пользователя', text='ID пользователя', anchor='c')
         self.tree.column('ID пользователя', width=120, anchor='c')
 
+        self.column_mapping = {
+            "ID": "id",
+            "Имя": "name",
+            "Телефон": "phone",
+            "ID пользователя": "user_id"
+        }
+
         self.tree.pack(expand=True, fill="both")
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
+        self.tree.bind("<Double-1>", self.on_cell_double_click)
         # Получаем данные из презентера
         teachers = self.presenter.get_teachers()
 
@@ -219,7 +249,7 @@ class AdminView(ctk.CTk):
 
     def show_course(self):
         """Вызывает загрузку студентов и отображает их"""
-        self.current_table = 'course'
+        self.current_table = 'courses'
         self.clear_main_frame()
         style = ttk.Style()
         style.configure("Treeview", font=('Arial', '17'))
@@ -242,9 +272,17 @@ class AdminView(ctk.CTk):
 
         self.tree.pack(expand=True, fill="both")
 
+        self.column_mapping = {
+            "ID": "id",
+            "Название": "title",
+            "Описание": "description",
+            "ID преподавателя": "teacher_id"
+        }
+
         # Получаем данные из презентера
         course = self.presenter.get_courses()
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
+        self.tree.bind("<Double-1>", self.on_cell_double_click)
         # Отображаем данные
         self.show_course_data(course)
 
@@ -277,8 +315,16 @@ class AdminView(ctk.CTk):
         self.tree.heading('Оценка', text='Оценки', anchor='c')
         self.tree.column('Оценка', width=50, anchor='c')
 
+        self.column_mapping = {
+            "ID": "id",
+            "ID студента": "student_id",
+            "ID преподавателя": "teacher_id",
+            "Оценка": "grade"
+        }
+
         self.tree.pack(expand=True, fill="both")
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
+        self.tree.bind("<Double-1>", self.on_cell_double_click)
         # Получаем данные из презентера
         enrollment = self.presenter.get_enrollments()
 
@@ -322,7 +368,7 @@ class AdminView(ctk.CTk):
         self.tree.column('Роль', width=120, anchor='c')
 
         self.column_mapping = {
-            "ID": "user_id",
+            "ID": "id",
             "Имя": "username",
             "Пароль": "password",
             "Роль": "role"
@@ -356,6 +402,7 @@ class AdminView(ctk.CTk):
         from presenter.login_presenter import UserPresenter
         self.current_presenter = UserPresenter(self)
         label = ctk.CTkLabel(add_user, text = "Добавить")
+        label.pack(pady=10)
         name_entry = ctk.CTkEntry(add_user, placeholder_text = "Имя")
         name_entry.pack(pady=10)
         password_entry = ctk.CTkEntry(add_user, placeholder_text="Пороль")
@@ -382,6 +429,7 @@ class AdminView(ctk.CTk):
         from presenter.student_presenter import StudentPresenter
         self.current_presenter = StudentPresenter(self)
         label = ctk.CTkLabel(add_student, text = "Добавить")
+        label.pack(pady=10)
         name_students_entry = ctk.CTkEntry(add_student, placeholder_text = "Имя")
         name_students_entry.pack(pady=10)
         age_students_entry = ctk.CTkEntry(add_student, placeholder_text="Возраст")
@@ -410,6 +458,7 @@ class AdminView(ctk.CTk):
         from presenter.teacher_presenter import TeacherPresenter
         self.current_presenter = TeacherPresenter(self)
         label = ctk.CTkLabel(add_teacher, text = "Добавить")
+        label.pack(pady=10)
         name_entry = ctk.CTkEntry(add_teacher, placeholder_text = "Имя")
         name_entry.pack(pady=10)
         tel_entry = ctk.CTkEntry(add_teacher, placeholder_text="Телефон")
@@ -436,6 +485,7 @@ class AdminView(ctk.CTk):
         from presenter.course_presenter import CoursePresenter
         self.current_presenter = CoursePresenter(self)
         label = ctk.CTkLabel(add_course, text = "Добавить")
+        label.pack(pady=10)
         name_entry = ctk.CTkEntry(add_course, placeholder_text = "Название")
         name_entry.pack(pady=10)
         description_entry = ctk.CTkEntry(add_course, placeholder_text="Описание")
@@ -462,6 +512,7 @@ class AdminView(ctk.CTk):
         from presenter.enrollment_presener import EnrollmentPresenter
         self.current_presenter = EnrollmentPresenter(self)
         label = ctk.CTkLabel(add_enrollment, text = "Добавить")
+        label.pack(pady = 10)
         students_entry = ctk.CTkEntry(add_enrollment, placeholder_text = "Студент")
         students_entry.pack(pady=10)
         teachers_entry = ctk.CTkEntry(add_enrollment, placeholder_text="Преподователь")
@@ -487,7 +538,7 @@ class AdminView(ctk.CTk):
             self.add_student_window()
         elif self.current_table == 'teachers':
             self.add_teacher_window()
-        elif self.current_table == 'course':
+        elif self.current_table == 'courses':
             self.add_course_window()
         elif self.current_table=='enrollments':
             self.add_enrollment_window()

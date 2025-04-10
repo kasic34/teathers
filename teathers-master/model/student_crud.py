@@ -43,6 +43,6 @@ class StudentCRUD:
     def delete_student(self,id):
         conn = sqlite3.connect(self.db_patch)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM students WHERE student_id = ?", (id, ))
+        cursor.execute("DELETE FROM students WHERE id = ?", (id, ))
         conn.commit()
         conn.close()

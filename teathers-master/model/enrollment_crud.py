@@ -31,7 +31,7 @@ class enrollmentCRUD:
     def delete_student_course(self, enrollment_id):
         conn = sqlite3.connect(self.db_patch)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM enrollments WHERE enrollment_id =?", (enrollment_id,))
+        cursor.execute("DELETE FROM enrollments WHERE id =?", (enrollment_id,))
         conn.commit()
         conn.close()
 

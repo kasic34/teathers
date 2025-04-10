@@ -43,6 +43,6 @@ class CourseCRUD:
     def delete_course(self, course_id):
         conn = sqlite3.connect(self.db_patch)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM courses WHERE course_id = ?", (course_id, ))
+        cursor.execute("DELETE FROM courses WHERE id = ?", (course_id, ))
         conn.commit()
         conn.close()
